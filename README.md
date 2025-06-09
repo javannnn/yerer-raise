@@ -16,6 +16,8 @@ Modern hand-raising assistant for Yerer Congregation hybrid meetings.
 - Editable names, manual hand-raise/highlight
 - Multi-screen support (audience, speaker)
 - Fast, simple, and congregation-friendly
+- Works without Zoom by manually adding participants
+- Search/filter participants and maintain a queue of raised hands
 
 ## Why?
 
@@ -30,9 +32,10 @@ Because Zoom doesn’t let you track hands automatically, and the Kingdom Hall d
 ## Setup
 
 1. Register your Zoom app on the [Zoom Marketplace](https://marketplace.zoom.us/)
-2. Paste your OAuth/JWT keys into the config file
-3. Plug in your screen setup
-4. Run the app, start the meeting, and watch the magic
+2. Install the package with `pip install .` or build a standalone executable using `pyinstaller --onefile -n YererRaise yererraise/app.py`.
+3. Run the app with `yererraise MEETING_ID` to use the Zoom integration or omit `MEETING_ID` to manage participants manually. Enter your Zoom credentials when prompted.
+4. Plug in your screen setup
+5. Start the meeting and watch the magic. Use the search box to quickly filter participants, toggle hand-raise status, and clear the queue at any time. The `Update` button pulls the latest version from this repository.
 
 ## Contributing
 
