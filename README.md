@@ -31,10 +31,16 @@ Because Zoom doesn’t let you track hands automatically, and the Kingdom Hall d
 
 ## Setup
 
+### Linux
 1. Register your Zoom app on the [Zoom Marketplace](https://marketplace.zoom.us/)
+2. Install the package with `pip install .`
+4. Plug in your screen setup and start the meeting. Use the `Update` button at any time to pull the latest version.
 
-2. Install the package with `pip install .` or build a standalone executable using `pyinstaller --onefile -n YererRaise yererraise/app.py`.
-3. Run the app with `yererraise MEETING_ID` to use the Zoom integration or omit `MEETING_ID` to manage participants manually. Enter your Zoom credentials when prompted.
+### Windows
+1. Install [Python](https://www.python.org/) and clone this repository.
+2. Install dependencies with `pip install -r requirements.txt` and `pip install pyinstaller`.
+3. Double‑click `build_exe.bat` (or run it from a command prompt) to generate `dist\YererRaise.exe`.
+4. Run `YererRaise.exe` to start the app. You can also install with `pip install .` and launch via the `yererraise` command.
 4. Plug in your screen setup
 5. Start the meeting and watch the magic. Use the search box to quickly filter participants, toggle hand-raise status, and clear the queue at any time. The `Update` button pulls the latest version from this repository.
 
