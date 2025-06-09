@@ -4,11 +4,28 @@ from datetime import datetime, timedelta
 from typing import List, Dict
 
 
+
 class ZoomClient:
     """Simple Zoom API client using OAuth."""
 
     def __init__(self, config: dict):
         self.config = config
+
+
+
+
+
+from .config import load_config
+
+
+class ZoomClient:
+    """Simple Zoom API client using OAuth or JWT."""
+
+    def __init__(self):
+        self.config = load_config()
+
+
+
         self.access_token = None
         self.token_expires_at = datetime.utcnow()
 
