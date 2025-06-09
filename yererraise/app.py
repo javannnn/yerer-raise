@@ -3,9 +3,9 @@ from pathlib import Path
 from typing import List, Dict, Optional
 from tkinter import messagebox
 from .zoom_client import ZoomClient
-from .config       import load_config
-from .display      import choose_displays
-from .ui           import (
+from .config import load_config
+from .display import choose_displays
+from .ui import (
     operator_window, speaker_window, update_speaker,
     prompt_credentials
 )

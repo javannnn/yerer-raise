@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 from .config import load_config
 
-
 class ZoomClient:
     """Tiny wrapper around Zoom Dashboard API (Business plan)."""
 
