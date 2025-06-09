@@ -33,13 +33,15 @@ Because Zoom doesn’t let you track hands automatically, and the Kingdom Hall d
 
 ### Linux
 1. Register your Zoom app on the [Zoom Marketplace](https://marketplace.zoom.us/)
-
-2. Install the package with `pip install .`
-3. Run the app with `yererraise MEETING_ID` to use the Zoom integration or omit `MEETING_ID` to manage participants manually. Enter your Zoom credentials when prompted.
-4. On first launch you'll select which monitor shows the speaker view.
-5. Plug in your screen setup and start the meeting. Use the `Update` button at any time to pull the latest version.
-=======
-
+2. Copy `yererraise/config.sample.json` to `yererraise/config.json` and fill in your credentials (or enter them when first launching the app).
+3. Install dependencies with `pip install .` (or `pip install -r requirements.txt`).
+4. Run the app with `yererraise MEETING_ID` to use the Zoom integration or omit `MEETING_ID` to manage participants manually.
+5. On first launch you'll select which monitor shows the speaker view.
+6. Plug in your screen setup and start the meeting. Use the `Update` button at any time to pull the latest version.
+2. Copy `yererraise/config.sample.json` to `yererraise/config.json` and add your Zoom credentials (or enter them when prompted at launch).
+3. Install dependencies with `pip install -r requirements.txt` and `pip install pyinstaller`.
+4. Double‑click `build_exe.bat` (or run it from a command prompt) to generate `dist\YererRaise.exe`.
+5. Run `YererRaise.exe` to start the app. You can also install with `pip install .` and launch via the `yererraise` command.
 
 
 
