@@ -30,10 +30,9 @@ Because Zoom doesn’t let you track hands automatically, and the Kingdom Hall d
 ## Setup
 
 1. Register your Zoom app on the [Zoom Marketplace](https://marketplace.zoom.us/)
-2. Copy `yererraise/config.sample.json` to `yererraise/config.json` and paste your OAuth credentials
+2. Run the app with `python -m yererraise.app MEETING_ID` and enter your Zoom credentials when prompted
 3. Plug in your screen setup
-4. Run the app with `python -m yererraise.app MEETING_ID`
-5. Start the meeting and watch the magic
+4. Start the meeting and watch the magic
 
 ## Contributing
 

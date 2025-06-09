@@ -3,13 +3,23 @@ import time
 from typing import List, Dict
 
 from .zoom_client import ZoomClient
-from .ui import create_main_window, create_speaker_window, update_speaker_window
+from .config import load_config
+from .ui import (
+    create_main_window,
+    create_speaker_window,
+    update_speaker_window,
+    prompt_credentials,
+)
 
 
 class YererRaiseApp:
     def __init__(self, meeting_id: str):
         self.meeting_id = meeting_id
-        self.zoom = ZoomClient()
+        try:
+            config = load_config()
+        except FileNotFoundError:
+            config = prompt_credentials()
+        self.zoom = ZoomClient(config)
         self.participants: List[Dict[str, str]] = []
         self.root = None
         self.speaker_window = None
@@ -24,6 +34,8 @@ class YererRaiseApp:
         def poll():
             while True:
                 self.fetch_participants()
+                if self.root:
+                    self.root.after(0, self.root.refresh_listbox)
                 time.sleep(10)
         t = threading.Thread(target=poll, daemon=True)
         t.start()
@@ -35,7 +47,8 @@ class YererRaiseApp:
         def update_callback(hands):
             update_speaker_window(self.speaker_window, hands)
 
-        self.root = create_main_window(self.participants, update_callback)
+        self.root = create_main_window(lambda: self.participants, update_callback)
+        self.root.refresh_listbox()
         self.start_polling()
         self.root.mainloop()
 
