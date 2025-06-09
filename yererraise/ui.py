@@ -10,16 +10,18 @@ def edit_name(root: tk.Tk, participant: Dict[str, str]):
 
 
 def create_speaker_window() -> tk.Toplevel:
+    """Create the full-screen speaker display window."""
     window = tk.Toplevel()
     window.title("Speaker View")
-    window.geometry("400x300")
-    label = tk.Label(window, text="", font=("Helvetica", 24))
+    window.geometry("600x400")
+    label = tk.Label(window, text="", font=("Helvetica", 32))
     label.pack(expand=True)
     window.label = label  # type: ignore
     return window
 
 
 def update_speaker_window(window: tk.Toplevel, hands: List[Dict[str, str]]):
+    """Update the speaker view with the queue of raised hands."""
     text = "\n".join(p['name'] for p in hands)
     window.label.config(text=text)
 
@@ -58,6 +60,11 @@ def create_main_window(
 ):
     root = tk.Tk()
     root.title("YererRaise")
+
+    search_var = tk.StringVar()
+    entry_search = tk.Entry(root, textvariable=search_var)
+    entry_search.pack(fill=tk.X)
+
     listbox = tk.Listbox(root, width=40)
     listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
@@ -65,11 +72,14 @@ def create_main_window(
     scrollbar.pack(side=tk.LEFT, fill=tk.Y)
     listbox.config(yscrollcommand=scrollbar.set)
 
-    hands = []
+    hands: List[Dict[str, str]] = []
 
-    def refresh_listbox():
+    def refresh_listbox(*_):
         listbox.delete(0, tk.END)
+        search = search_var.get().lower()
         for p in get_participants():
+            if search and search not in p['name'].lower():
+                continue
             prefix = "✋ " if p in hands else ""
             listbox.insert(tk.END, f"{prefix}{p['name']}")
 
@@ -109,6 +119,11 @@ def create_main_window(
     if add_participant:
         btn_add = tk.Button(root, text="Add Participant", command=add_participant_dialog)
         btn_add.pack(fill=tk.X)
+
+    btn_clear = tk.Button(root, text="Clear All", command=lambda: (hands.clear(), refresh_listbox(), update_callback(hands)))
+    btn_clear.pack(fill=tk.X)
+
+    search_var.trace_add('write', refresh_listbox)
 
     refresh_listbox()
     root.refresh_listbox = refresh_listbox  # type: ignore
