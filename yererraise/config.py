@@ -1,13 +1,14 @@
 import json
 from pathlib import Path
 
-CONFIG_PATH = Path(__file__).resolve().parent / "config.json"
+CONFIG_PATH = Path(__file__).with_name("config.json")
 
 def load_config(path: Path = CONFIG_PATH) -> dict:
-    """Load configuration from JSON file."""
+    """Load JSON config (Zoom OAuth creds)."""
     if not path.exists():
         raise FileNotFoundError(
-            f"Config file not found: {path}. Copy config.sample.json to config.json and fill it in."
+            f"Config file not found: {path}. Copy config.sample.json ➜ config.json "
+            "and fill in your Zoom account_id / client_id / client_secret."
         )
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    with path.open(encoding="utf-8") as fh:
+        return json.load(fh)

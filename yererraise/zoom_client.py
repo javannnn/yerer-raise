@@ -1,49 +1,40 @@
-import base64
-import requests
+import base64, requests
 from datetime import datetime, timedelta
-from typing import List, Dict
+from typing import List, Dict, Optional
 from .config import load_config
 
 class ZoomClient:
-    """Simple Zoom API client using OAuth or JWT."""
+    """Tiny wrapper around Zoom Dashboard API (Business plan)."""
 
-    def __init__(self, config: dict = None):
-        # Load config from parameter or from file
-        self.config = config if config else load_config()
-        self.access_token = None
-        self.token_expires_at = datetime.utcnow()
+    def __init__(self, cfg: Optional[dict] = None):
+        self.cfg = cfg or load_config()
+        self.access_token: Optional[str] = None
+        self.expires: datetime = datetime.min
 
-    def _encode_credentials(self) -> str:
-        cid = self.config.get('client_id')
-        secret = self.config.get('client_secret')
-        credentials = f"{cid}:{secret}"
-        return base64.b64encode(credentials.encode()).decode()
+    # ── internal helpers ────────────────────────────────────────────────────
+    def _encode(self) -> str:
+        creds = f"{self.cfg['client_id']}:{self.cfg['client_secret']}"
+        return base64.b64encode(creds.encode()).decode()
 
-    def _fetch_access_token(self):
-        token_url = f"https://zoom.us/oauth/token?grant_type=account_credentials&account_id={self.config['account_id']}"
-        headers = {
-            "Authorization": f"Basic {self._encode_credentials()}",
-        }
-        response = requests.post(token_url, headers=headers)
-        response.raise_for_status()
-        data = response.json()
-        self.access_token = data['access_token']
-        self.token_expires_at = datetime.utcnow() + timedelta(seconds=data['expires_in'])
+    def _refresh_token(self) -> None:
+        url = (
+            "https://zoom.us/oauth/token"
+            f"?grant_type=account_credentials&account_id={self.cfg['account_id']}"
+        )
+        hdr = {"Authorization": f"Basic {self._encode()}"}
+        data = requests.post(url, headers=hdr).json()
+        self.access_token = data["access_token"]
+        self.expires      = datetime.utcnow() + timedelta(seconds=data["expires_in"])
 
-    def _ensure_token(self):
-        if not self.access_token or datetime.utcnow() >= self.token_expires_at:
-            self._fetch_access_token()
+    def _ensure_token(self) -> None:
+        if not self.access_token or datetime.utcnow() >= self.expires:
+            self._refresh_token()
 
-    def get_meeting_participants(self, meeting_id: str) -> List[Dict[str, str]]:
-        """Fetch current meeting participants."""
+    # ── public API ───────────────────────────────────────────────
+    def participants(self, meeting_id: str) -> List[Dict[str, str]]:
+        """Return live participants list (names, ids, etc.)."""
         self._ensure_token()
         url = f"https://api.zoom.us/v2/metrics/meetings/{meeting_id}/participants"
-        headers = {
-            "Authorization": f"Bearer {self.access_token}",
-        }
-        params = {"type": "live"}
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()
-        data = response.json()
-        return data.get('participants', [])
-
+        hdr = {"Authorization": f"Bearer {self.access_token}"}
+        resp = requests.get(url, headers=hdr, params={"type": "live"}).json()
+        return resp.get("participants", [])

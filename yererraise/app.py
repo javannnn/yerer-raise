@@ -1,109 +1,84 @@
-import threading
-import time
-from typing import List, Dict, Optional
-import subprocess
+import threading, time, subprocess
 from pathlib import Path
+from typing import List, Dict, Optional
 from tkinter import messagebox
-
 from .zoom_client import ZoomClient
 from .config import load_config
+from .display import choose_displays
 from .ui import (
-    create_main_window,
-    create_speaker_window,
-    update_speaker_window,
-    prompt_credentials,
+    operator_window, speaker_window, update_speaker,
+    prompt_credentials
 )
+
+POLL_INTERVAL = 10  # seconds
 
 class YererRaiseApp:
     def __init__(self, meeting_id: Optional[str] = None):
-        """
-        Initialize the application.
+        # pick monitors -------------------------------------------------------
+        self.aud_idx, self.spk_idx = choose_displays()
 
-        If ``meeting_id`` is provided, Zoom integration will be enabled and the
-        user will be asked for credentials if a config file is not found.
-        Otherwise the app runs in manual mode.
-        """
         self.meeting_id = meeting_id
         self.zoom: Optional[ZoomClient] = None
-        if self.meeting_id:
+        if meeting_id:
             try:
-                config = load_config()
+                cfg = load_config()
             except FileNotFoundError:
-                config = prompt_credentials()
-            self.zoom = ZoomClient(config)
+                cfg = prompt_credentials()
+            self.zoom = ZoomClient(cfg)
 
-        self.participants: List[Dict[str, str]] = []
-        self.root = None
-        self.speaker_window = None
-
-    def update_app(self):
-        """Pull the latest code from the repository."""
-        repo_dir = Path(__file__).resolve().parent.parent
-        try:
-            subprocess.check_call(["git", "pull"], cwd=repo_dir)
-            messagebox.showinfo("Update", "Application updated. Please restart.")
-        except Exception as e:
-            messagebox.showerror("Update failed", str(e))
-
-    def add_participant(self, name: str):
-        """Add a participant manually."""
-        self.participants.append({"name": name})
-        if self.root:
-            self.root.after(0, self.root.refresh_listbox)
-
-    def fetch_participants(self):
-        if not self.zoom or not self.meeting_id:
-            return
-        try:
-            self.participants = self.zoom.get_meeting_participants(self.meeting_id)
-        except Exception as e:
-            print(f"Failed to fetch participants: {e}")
-
-    def start_polling(self):
-        if not self.zoom or not self.meeting_id:
-            return
-
-        def poll():
-            while True:
-                self.fetch_participants()
-                if self.root:
-                    self.root.after(0, self.root.refresh_listbox)
-                time.sleep(10)
-
-        t = threading.Thread(target=poll, daemon=True)
-        t.start()
-
-    def run(self):
-        self.fetch_participants()
-        self.speaker_window = create_speaker_window()
-
-        def update_callback(hands):
-            update_speaker_window(self.speaker_window, hands)
-
-        self.root = create_main_window(
-            lambda: self.participants,
-            update_callback,
-            add_participant=self.add_participant,
-            update_app=self.update_app,
+        self.participants: List[Dict[str,str]] = []
+        self.speaker = speaker_window(self.spk_idx)
+        self.root    = operator_window(
+            self._get_participants,
+            lambda q: update_speaker(self.speaker, q),
+            add = self._add_manual,
+            refresh_repo = self._git_pull
         )
-        self.root.refresh_listbox()
-
-        self.start_polling()
+        self.root.after(100, self.root.refresh)  # initial draw
+        self._start_polling()
         self.root.mainloop()
 
+    # ── operator helpers ────────────────────────────────────────────────────
+    def _git_pull(self) -> None:
+        try:
+            subprocess.check_call(["git", "pull"], cwd=Path(__file__).resolve().parent.parent)
+            messagebox.showinfo("Update", "Code updated – restart app to apply.")
+        except Exception as exc:
+            messagebox.showerror("Update failed", str(exc))
+
+    def _add_manual(self, name: str) -> None:
+        self.participants.append({"name": name})
+        self.root.refresh()
+
+    def _get_participants(self) -> List[Dict[str,str]]:
+        return self.participants
+
+    # ── polling Zoom every N seconds ───────────────────────────────────────
+    def _poll_zoom(self):
+        while True:
+            if self.zoom and self.meeting_id:
+                try:
+                    self.participants = self.zoom.participants(self.meeting_id)
+                    self.root.after(0, self.root.refresh)
+                except Exception as exc:
+                    print("Zoom polling failed:", exc)
+            time.sleep(POLL_INTERVAL)
+
+    def _start_polling(self):
+        if self.zoom:
+            threading.Thread(target=self._poll_zoom, daemon=True).start()
+
+# ── CLI entrypoint ──────────────────────────────────────────────────────────
 def main():
-    import argparse
-
+    import argparse, sys
     parser = argparse.ArgumentParser(description="YererRaise")
-    parser.add_argument(
-        "meeting_id",
-        nargs="?",
-        help="Zoom meeting ID (omit to manage participants manually)",
-    )
+    parser.add_argument("meeting_id", nargs="?", help="Zoom Meeting ID (empty=manual mode)")
     args = parser.parse_args()
-
-    app = YererRaiseApp(args.meeting_id)
-    app.run()
+    try:
+        YererRaiseApp(args.meeting_id)
+    except Exception as exc:
+        print("Fatal:", exc)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
