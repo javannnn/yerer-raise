@@ -16,6 +16,7 @@ Modern hand-raising assistant for Yerer Congregation hybrid meetings.
 - Editable names, manual hand-raise/highlight
 - Multi-screen support (audience, speaker)
 - Fast, simple, and congregation-friendly
+- Works without Zoom by manually adding participants
 
 ## Why?
 
@@ -30,9 +31,9 @@ Because Zoom doesn’t let you track hands automatically, and the Kingdom Hall d
 ## Setup
 
 1. Register your Zoom app on the [Zoom Marketplace](https://marketplace.zoom.us/)
-2. Paste your OAuth/JWT keys into the config file
+2. Run the app with `python -m yererraise.app MEETING_ID` to use the Zoom integration or omit `MEETING_ID` to manage participants manually. Enter your Zoom credentials when prompted.
 3. Plug in your screen setup
-4. Run the app, start the meeting, and watch the magic
+4. Start the meeting and watch the magic
 
 ## Contributing
 
