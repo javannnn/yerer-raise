@@ -1,8 +1,21 @@
 import threading
 import time
 from typing import List, Dict
+import subprocess
+from pathlib import Path
+from tkinter import messagebox
 
 
+    def update_app(self):
+        """Pull the latest code from the repository."""
+        repo_dir = Path(__file__).resolve().parent.parent
+        try:
+            subprocess.check_call(["git", "pull"], cwd=repo_dir)
+            messagebox.showinfo("Update", "Application updated. Please restart.")
+        except Exception as e:
+            messagebox.showerror("Update failed", str(e))
+
+            update_app=self.update_app,
 from typing import Optional
 
 from .zoom_client import ZoomClient

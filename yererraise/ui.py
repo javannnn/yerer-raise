@@ -33,6 +33,7 @@ def create_speaker_window() -> tk.Toplevel:
 
 def update_speaker_window(window: tk.Toplevel, hands: List[Dict[str, str]]):
 
+    update_app: Optional[Callable[[], None]] = None,
     """Update the speaker view with the queue of raised hands."""
 
     text = "\n".join(p['name'] for p in hands)
@@ -98,6 +99,10 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
         search = search_var.get().lower()
         for p in get_participants():
             if search and search not in p['name'].lower():
+    if update_app:
+        btn_update = tk.Button(root, text="Update", command=update_app)
+        btn_update.pack(fill=tk.X)
+
                 continue
 
     hands = []
