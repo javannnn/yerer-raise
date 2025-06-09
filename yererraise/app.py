@@ -2,9 +2,15 @@ import threading
 import time
 from typing import List, Dict
 
+
+
+
 import subprocess
 from pathlib import Path
 from tkinter import messagebox
+
+
+
 
 
 from typing import Optional
@@ -41,6 +47,8 @@ class YererRaiseApp:
 
 
 
+
+
 from .zoom_client import ZoomClient
 from .ui import create_main_window, create_speaker_window, update_speaker_window
 
@@ -51,9 +59,13 @@ class YererRaiseApp:
         self.zoom = ZoomClient()
 
 
+
         self.participants: List[Dict[str, str]] = []
         self.root = None
         self.speaker_window = None
+
+
+
 
 
     def update_app(self):
@@ -64,6 +76,9 @@ class YererRaiseApp:
             messagebox.showinfo("Update", "Application updated. Please restart.")
         except Exception as e:
             messagebox.showerror("Update failed", str(e))
+
+
+
 
 
     def add_participant(self, name: str):
@@ -78,7 +93,10 @@ class YererRaiseApp:
 
 
 
+
+
     def fetch_participants(self):
+
 
 
 
@@ -88,6 +106,9 @@ class YererRaiseApp:
             print(f"Failed to fetch participants: {e}")
 
     def start_polling(self):
+
+
+
 
         if not self.zoom or not self.meeting_id:
             return
@@ -102,10 +123,13 @@ class YererRaiseApp:
 
 
 
+
+
         def poll():
             while True:
                 self.fetch_participants()
                 time.sleep(10)
+
 
 
         t = threading.Thread(target=poll, daemon=True)
@@ -119,10 +143,18 @@ class YererRaiseApp:
             update_speaker_window(self.speaker_window, hands)
 
 
+
+
+
         self.root = create_main_window(
             lambda: self.participants,
             update_callback,
             add_participant=self.add_participant,
+
+            update_app=self.update_app,
+        )
+        self.root.refresh_listbox()
+
 
             update_app=self.update_app,
         )
@@ -140,6 +172,7 @@ class YererRaiseApp:
 
 
 
+
         self.start_polling()
         self.root.mainloop()
 
@@ -149,6 +182,9 @@ def main():
 
     parser = argparse.ArgumentParser(description="YererRaise")
 
+
+
+
     parser.add_argument(
         "meeting_id",
         nargs="?",
@@ -157,7 +193,10 @@ def main():
 
 
 
+
+
     parser.add_argument("meeting_id", help="Zoom meeting ID")
+
 
 
     args = parser.parse_args()
@@ -168,4 +207,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
 

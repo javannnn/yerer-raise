@@ -4,6 +4,20 @@ from tkinter import simpledialog, messagebox
 from typing import List, Dict, Callable, Optional
 
 
+def edit_name(root: tk.Tk, participant: Dict[str, str]):
+    new_name = simpledialog.askstring(
+        "Edit Name", "Enter new name:", initialvalue=participant["name"], parent=root
+    )
+    if new_name:
+        participant["name"] = new_name
+
+
+def create_speaker_window() -> tk.Toplevel:
+
+
+from typing import List, Dict, Callable, Optional
+
+
 
 from typing import List, Dict, Callable, Optional
 
@@ -25,11 +39,14 @@ def edit_name(root: tk.Tk, participant: Dict[str, str]):
 
 def create_speaker_window() -> tk.Toplevel:
 
+
     """Create the full-screen speaker display window."""
     window = tk.Toplevel()
     window.title("Speaker View")
     window.geometry("600x400")
     label = tk.Label(window, text="", font=("Helvetica", 32))
+
+
 
 
     window = tk.Toplevel()
@@ -39,12 +56,20 @@ def create_speaker_window() -> tk.Toplevel:
 
 
 
+
     label.pack(expand=True)
     window.label = label  # type: ignore
     return window
 
 
 def update_speaker_window(window: tk.Toplevel, hands: List[Dict[str, str]]):
+
+    """Update the speaker view with the queue of raised hands."""
+    text = "\n".join(p["name"] for p in hands)
+    window.label.config(text=text)
+
+
+
 
     """Update the speaker view with the queue of raised hands."""
 
@@ -58,6 +83,7 @@ def update_speaker_window(window: tk.Toplevel, hands: List[Dict[str, str]]):
 
     text = "\n".join(p['name'] for p in hands)
     window.label.config(text=text)
+
 
 
 
@@ -99,6 +125,10 @@ def create_main_window(
     update_app: Optional[Callable[[], None]] = None,
 
 
+    update_app: Optional[Callable[[], None]] = None,
+
+
+
 ):
     root = tk.Tk()
     root.title("YererRaise")
@@ -110,9 +140,12 @@ def create_main_window(
 
 
 
+
+
 def create_main_window(participants: List[Dict[str, str]], update_callback):
     root = tk.Tk()
     root.title("YererRaise")
+
 
 
 
@@ -124,12 +157,19 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
     listbox.config(yscrollcommand=scrollbar.set)
 
 
+
+
+
     hands: List[Dict[str, str]] = []
 
     def refresh_listbox(*_):
         listbox.delete(0, tk.END)
         search = search_var.get().lower()
         for p in get_participants():
+
+            if search and search not in p["name"].lower():
+                continue
+=======
             if search and search not in p['name'].lower():
                 continue
 
@@ -140,6 +180,7 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
     def refresh_listbox():
         listbox.delete(0, tk.END)
         for p in participants:
+
 
 
 
@@ -159,7 +200,11 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
 
         participant = get_participants()[index[0]]
 
+
+        participant = get_participants()[index[0]]
+
         participant = participants[index[0]]
+
 
 
 
@@ -181,7 +226,11 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
 
         participant = get_participants()[index[0]]
 
+
+        participant = get_participants()[index[0]]
+
         participant = participants[index[0]]
+
 
 
 
@@ -191,6 +240,9 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
             hands.append(participant)
         refresh_listbox()
         update_callback(hands)
+
+
+
 
 
 
@@ -206,6 +258,20 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
     btn_toggle = tk.Button(root, text="Raise/Lower Hand", command=toggle_hand)
     btn_toggle.pack(fill=tk.X)
     if add_participant:
+
+        btn_add = tk.Button(
+            root, text="Add Participant", command=add_participant_dialog
+        )
+        btn_add.pack(fill=tk.X)
+
+    btn_clear = tk.Button(
+        root,
+        text="Clear All",
+        command=lambda: (hands.clear(), refresh_listbox(), update_callback(hands)),
+    )
+    btn_clear.pack(fill=tk.X)
+
+
         btn_add = tk.Button(root, text="Add Participant", command=add_participant_dialog)
         btn_add.pack(fill=tk.X)
 
@@ -213,9 +279,17 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
     btn_clear.pack(fill=tk.X)
 
 
+
     if update_app:
         btn_update = tk.Button(root, text="Update", command=update_app)
         btn_update.pack(fill=tk.X)
+
+
+    search_var.trace_add("write", refresh_listbox)
+
+    refresh_listbox()
+    root.refresh_listbox = refresh_listbox  # type: ignore
+    return root
 
 
     search_var.trace_add('write', refresh_listbox)
@@ -234,4 +308,5 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
 
 
     return root
+
 
