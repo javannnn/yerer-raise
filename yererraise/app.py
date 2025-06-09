@@ -87,7 +87,6 @@ class YererRaiseApp:
         except Exception as e:
             print(f"Failed to fetch participants: {e}")
 
-    def start_polling(self):
 
         if not self.zoom or not self.meeting_id:
             return

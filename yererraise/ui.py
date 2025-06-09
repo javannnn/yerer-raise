@@ -1,11 +1,13 @@
 import tkinter as tk
 from tkinter import simpledialog, messagebox
 
-from typing import List, Dict, Callable, Optional
+    new_name = simpledialog.askstring(
+        "Edit Name", "Enter new name:", initialvalue=participant["name"], parent=root
+    )
+        participant["name"] = new_name
 
 
-
-from typing import List, Dict, Callable, Optional
+    text = "\n".join(p["name"] for p in hands)
 
 
 
@@ -56,13 +58,18 @@ def update_speaker_window(window: tk.Toplevel, hands: List[Dict[str, str]]):
 
 
 
-    text = "\n".join(p['name'] for p in hands)
-    window.label.config(text=text)
+            if search and search not in p["name"].lower():
+        btn_add = tk.Button(
+            root, text="Add Participant", command=add_participant_dialog
+        )
 
+    btn_clear = tk.Button(
+        root,
+        text="Clear All",
+        command=lambda: (hands.clear(), refresh_listbox(), update_callback(hands)),
+    )
 
-
-def prompt_credentials() -> Dict[str, str]:
-    """Prompt the user for Zoom API credentials."""
+    search_var.trace_add("write", refresh_listbox)
     root = tk.Tk()
     root.withdraw()
 

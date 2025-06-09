@@ -5,18 +5,19 @@ from typing import List, Dict
 
 
 
-class ZoomClient:
-    """Simple Zoom API client using OAuth."""
+        cid = self.config.get("client_id")
+        secret = self.config.get("client_secret")
 
-    def __init__(self, config: dict):
-        self.config = config
+            "Authorization": f"Basic {self._encode_credentials()}",
+        self.access_token = data["access_token"]
+        self.token_expires_at = datetime.utcnow() + timedelta(
+            seconds=data["expires_in"]
+        )
 
 
-
-
-
-from .config import load_config
-
+            "Authorization": f"Bearer {self.access_token}",
+        params = {"type": "live"}
+        return data.get("participants", [])
 
 class ZoomClient:
     """Simple Zoom API client using OAuth or JWT."""
