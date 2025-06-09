@@ -13,6 +13,8 @@ class ZoomClient:
 
 
 
+
+
 from .config import load_config
 
 
@@ -21,6 +23,7 @@ class ZoomClient:
 
     def __init__(self):
         self.config = load_config()
+
 
 
         self.access_token = None

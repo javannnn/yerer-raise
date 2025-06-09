@@ -7,7 +7,12 @@ from typing import List, Dict, Callable, Optional
 
 from typing import List, Dict, Callable, Optional
 
+
+
+from typing import List, Dict, Callable, Optional
+
 from typing import List, Dict
+
 
 
 
@@ -33,6 +38,7 @@ def create_speaker_window() -> tk.Toplevel:
     label = tk.Label(window, text="", font=("Helvetica", 24))
 
 
+
     label.pack(expand=True)
     window.label = label  # type: ignore
     return window
@@ -46,9 +52,12 @@ def update_speaker_window(window: tk.Toplevel, hands: List[Dict[str, str]]):
     """Update the speaker view with the queue of raised hands."""
 
 
+    """Update the speaker view with the queue of raised hands."""
+
+
+
     text = "\n".join(p['name'] for p in hands)
     window.label.config(text=text)
-
 
 
 
@@ -86,6 +95,10 @@ def create_main_window(
 
     update_app: Optional[Callable[[], None]] = None,
 
+
+    update_app: Optional[Callable[[], None]] = None,
+
+
 ):
     root = tk.Tk()
     root.title("YererRaise")
@@ -95,9 +108,12 @@ def create_main_window(
     entry_search.pack(fill=tk.X)
 
 
+
+
 def create_main_window(participants: List[Dict[str, str]], update_callback):
     root = tk.Tk()
     root.title("YererRaise")
+
 
 
     listbox = tk.Listbox(root, width=40)
@@ -106,7 +122,6 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
     scrollbar = tk.Scrollbar(root, orient=tk.VERTICAL, command=listbox.yview)
     scrollbar.pack(side=tk.LEFT, fill=tk.Y)
     listbox.config(yscrollcommand=scrollbar.set)
-
 
 
     hands: List[Dict[str, str]] = []
@@ -119,11 +134,13 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
                 continue
 
 
+
     hands = []
 
     def refresh_listbox():
         listbox.delete(0, tk.END)
         for p in participants:
+
 
 
             prefix = "✋ " if p in hands else ""
@@ -139,7 +156,11 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
 
         participant = get_participants()[index[0]]
 
+
+        participant = get_participants()[index[0]]
+
         participant = participants[index[0]]
+
 
 
         edit_name(root, participant)
@@ -157,7 +178,11 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
 
         participant = get_participants()[index[0]]
 
+
+        participant = get_participants()[index[0]]
+
         participant = participants[index[0]]
+
 
 
         if participant in hands:
@@ -166,6 +191,7 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
             hands.append(participant)
         refresh_listbox()
         update_callback(hands)
+
 
 
     def add_participant_dialog():
@@ -198,11 +224,13 @@ def create_main_window(participants: List[Dict[str, str]], update_callback):
     root.refresh_listbox = refresh_listbox  # type: ignore
 
 
+
     listbox.bind("<Double-1>", on_double_click)
     btn_toggle = tk.Button(root, text="Raise/Lower Hand", command=toggle_hand)
     btn_toggle.pack(fill=tk.X)
 
     refresh_listbox()
+
 
 
     return root

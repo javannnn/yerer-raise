@@ -40,6 +40,7 @@ class YererRaiseApp:
 
 
 
+
 from .zoom_client import ZoomClient
 from .ui import create_main_window, create_speaker_window, update_speaker_window
 
@@ -76,7 +77,9 @@ class YererRaiseApp:
             return
 
 
+
     def fetch_participants(self):
+
 
 
         try:
@@ -95,6 +98,7 @@ class YererRaiseApp:
                 if self.root:
                     self.root.after(0, self.root.refresh_listbox)
                 time.sleep(10)
+
 
 
 
@@ -124,10 +128,16 @@ class YererRaiseApp:
         )
         self.root.refresh_listbox()
 
+
+            update_app=self.update_app,
+        )
+        self.root.refresh_listbox()
+
         )
         self.root.refresh_listbox()
 
         self.root = create_main_window(self.participants, update_callback)
+
 
 
         self.start_polling()
@@ -144,6 +154,7 @@ def main():
         nargs="?",
         help="Zoom meeting ID (omit to manage participants manually)",
     )
+
 
 
     parser.add_argument("meeting_id", help="Zoom meeting ID")
